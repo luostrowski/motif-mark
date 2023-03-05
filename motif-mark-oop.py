@@ -83,7 +83,7 @@ class Gene:
         ''' This function include the header for each gene. '''
         ctx.set_source_rgb(0, 0, 0) 
         ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-        #ctx.set_font_size(0.1)
+        ctx.set_font_size(15)
         ctx.move_to(self.x_start + 10, self.y - 35)
         ctx.show_text(text)
         ctx.stroke()
@@ -192,6 +192,7 @@ class Motif:
                 ctx.set_source_rgb(0,0,0)
             print("Motifs draw!")
 
+
 ########
 # Main #
 ########
@@ -247,8 +248,25 @@ with open(fasta_file, "r") as fq:  ## adjust this to move to the other line and 
         for j, mname in enumerate(motif_list): ## motif index (to match the color) and motif name
             motif = Motif(seq, mname, i*100) ## changing y with every line
             motif.draw(ctx, color_list[j]) 
-        #print(exon)
-        surface.write_to_png(str(fasta_file) + ".png") ## saving file
+l_y_start = i*100
+l_x_start = 30
+ctx.set_source_rgb(0,0,0)
+ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+ctx.move_to(l_x_start, l_y_start - 20)
+ctx.set_font_size(20)
+ctx.show_text("Motifs")
+ctx.set_font_size(12)
+for j, mname in enumerate(motif_list): ## draw legend for each motif
+    ctx.set_source_rgb(color_list[j][0], color_list[j][1], color_list[j][2]) ## setting color 
+    ctx.rectangle(l_x_start, l_y_start, 20, 20) ## (x0, y0, w, h)
+    ctx.fill()
+    ctx.set_source_rgb(0,0,0)
+    ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+    ctx.move_to(l_x_start + 25, l_y_start + 15)
+    ctx.show_text(mname)  ## motif name
+    ctx.stroke()
+    l_y_start += 30
+surface.write_to_png(str(fasta_file) + ".png") ## saving file
 
 
 
