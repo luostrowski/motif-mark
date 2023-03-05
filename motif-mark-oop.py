@@ -211,13 +211,16 @@ with open(fasta_file, "r") as ff:
 
 ## setting canvas 
 height = g * 250  ## depending on the number of genes in the file
-width = max(lengths)  ## depending on the size of the sequences in the fasta
+width = max(lengths) * 2 ## depending on the size of the sequences in the fasta
 surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height) ## setting surface to png
 ctx = cairo.Context(surface) ## setting context
+ctx.set_source_rgb(1, 1, 1) ## white background
+ctx.paint()
 
 with open(fasta_file, "r") as fq:  ## adjust this to move to the other line and draw there
     i = 0
-    color_list = [(255,0,0), (0,0,255), (0,255,0), (255,255,0)]
+    #color_list = [(255, 255, 0), (127, 0, 255), (0, 128, 255), (0, 204, 0), (0.57,0.43,0.85)] ## yellow, pink, blue, green, purple
+    color_list = [(0.39, 0.58, 0.92), (0.85, 0.43, 0.83), (0.12, 0.69, 0.66), (0.57,0.43,0.85), (1, 0.84, 0)] ## blue, pink, green, purple, yellow
     while True:
         #y = 10 ## increase y for each gene !! 
         header = fq.readline()
