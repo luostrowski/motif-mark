@@ -51,6 +51,7 @@ class Gene:
         self.x_end = len(seq) ## length of the sequence is the x end
         self.y = y # y1 and y2 are the same because we are drawing a line
         self.exon = self.create_exon() ## calling the function to create an exon
+        #self.text = text ## text to write
 
     def __repr__(self):
         '''Changes the representation of the object.''' 
@@ -77,6 +78,16 @@ class Gene:
         ctx.stroke()
         print("Line draw!")
         #print(type(ctx))
+    
+    def write_header(self, ctx, text):
+        ''' This function include the header for each gene. '''
+        ctx.set_source_rgb(0, 0, 0) 
+        ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        #ctx.set_font_size(0.1)
+        ctx.move_to(self.x_start + 10, self.y - 35)
+        ctx.show_text(text)
+        ctx.stroke()
+
 
 class Exon:
     ''' This is how you create a exon object. ''' 
@@ -211,7 +222,7 @@ with open(fasta_file, "r") as ff:
 
 ## setting canvas 
 height = g * 250  ## depending on the number of genes in the file
-width = max(lengths) * 2 ## depending on the size of the sequences in the fasta
+width = max(lengths) + 200 ## depending on the size of the sequences in the fasta
 surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height) ## setting surface to png
 ctx = cairo.Context(surface) ## setting context
 ctx.set_source_rgb(1, 1, 1) ## white background
@@ -219,7 +230,6 @@ ctx.paint()
 
 with open(fasta_file, "r") as fq:  ## adjust this to move to the other line and draw there
     i = 0
-    #color_list = [(255, 255, 0), (127, 0, 255), (0, 128, 255), (0, 204, 0), (0.57,0.43,0.85)] ## yellow, pink, blue, green, purple
     color_list = [(0.39, 0.58, 0.92), (0.85, 0.43, 0.83), (0.12, 0.69, 0.66), (0.57,0.43,0.85), (1, 0.84, 0)] ## blue, pink, green, purple, yellow
     while True:
         #y = 10 ## increase y for each gene !! 
@@ -229,13 +239,14 @@ with open(fasta_file, "r") as fq:  ## adjust this to move to the other line and 
         if header == "": 
             break   ## EOF (end of file)
         gene = Gene(seq, i*100)
+        gene.write_header(ctx, header)
         gene.draw(ctx)
         #print(gene)
         exon = gene.create_exon()
         exon.draw(ctx)
-        for j, mname in enumerate(motif_list): ## motif index (to match the color color) and motif name
-            motif = Motif(seq, mname, i*100)
-            motif.draw(ctx, color_list[j])
+        for j, mname in enumerate(motif_list): ## motif index (to match the color) and motif name
+            motif = Motif(seq, mname, i*100) ## changing y with every line
+            motif.draw(ctx, color_list[j]) 
         #print(exon)
         surface.write_to_png(str(fasta_file) + ".png") ## saving file
 
