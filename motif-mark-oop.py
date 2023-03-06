@@ -6,12 +6,11 @@ from __future__ import annotations
 import argparse
 import re
 import cairo
-import math
 
 def get_args():
     parser = argparse.ArgumentParser(description="This code will parse through a fasta file and a motif file and it will return an PNG image of the intron, exon and motif locations.")
     parser.add_argument("-f",  "--fasta", help="Absolute file path to FASTA file.", required = True)
-    parser.add_argument("-m", "--motifs", help = "Absolute file path to the motifs file.", required = True)
+    parser.add_argument("-m", "--motifs", help = "Absolute file path to the motifs file (max 5 motifs).", required = True)
     return parser.parse_args()
 
 args = get_args()
@@ -81,13 +80,18 @@ class Gene:
     
     def write_header(self, ctx, text):
         ''' This function include the header for each gene. '''
-        ctx.set_source_rgb(0, 0, 0) 
-        ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-        ctx.set_font_size(15)
-        ctx.move_to(self.x_start + 10, self.y - 35)
-        ctx.show_text(text)
-        ctx.stroke()
-
+        match = re.search(">(.+) chr(.+):(.+)-(\d+)", text)
+        if match is not None:
+            gene_name = match.group(1) ## first match is the gene
+            chr = match.group(2) ## second match is chromossome
+            loc_start = match.group(3) ## third match is start location
+            loc_end = match.group(4) ## fourth match is end location
+            ctx.set_source_rgb(0, 0, 0) 
+            ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            ctx.set_font_size(15)
+            ctx.move_to(self.x_start + 10, self.y - 35)
+            ctx.show_text(f"Gene: {gene_name}    Chromossome: {chr}    Location: {loc_start}-{loc_end}")
+            ctx.stroke()
 
 class Exon:
     ''' This is how you create a exon object. ''' 
@@ -197,7 +201,7 @@ class Motif:
 # Main #
 ########
 
-oneline_fasta("Figure_1.fasta", "output.fasta") ## output file with one line sequence
+oneline_fasta("Figure_1.fasta", "Figure1_one_line.fasta") ## output file with one line sequence
 
 ## creating motif list
 motif_list = []
@@ -222,7 +226,7 @@ with open(fasta_file, "r") as ff:
             g +=1
 
 ## setting canvas 
-height = g * 250  ## depending on the number of genes in the file
+height = g * 170  ## depending on the number of genes in the file
 width = max(lengths) + 200 ## depending on the size of the sequences in the fasta
 surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height) ## setting surface to png
 ctx = cairo.Context(surface) ## setting context
@@ -250,6 +254,8 @@ with open(fasta_file, "r") as fq:  ## adjust this to move to the other line and 
             motif.draw(ctx, color_list[j]) 
 l_y_start = i*100
 l_x_start = 30
+
+## including legend
 ctx.set_source_rgb(0,0,0)
 ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 ctx.move_to(l_x_start, l_y_start - 20)
