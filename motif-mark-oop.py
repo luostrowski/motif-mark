@@ -200,8 +200,8 @@ class Motif:
 ########
 # Main #
 ########
-
-oneline_fasta("Figure_1.fasta", "Figure1_one_line.fasta") ## output file with one line sequence
+new_fasta_file = f'oneline_{fasta_file}'
+oneline_fasta(fasta_file, new_fasta_file) ## output file with one line sequence
 
 ## creating motif list
 motif_list = []
@@ -218,7 +218,7 @@ with open(motif_file, "r") as mf:
 ## loop to find the height of the canvas
 lengths = []
 g = 0 ## counts for the number of genes
-with open(fasta_file, "r") as ff:
+with open(new_fasta_file, "r") as ff:
     for line in ff:
         if not line.startswith(">"):
             lengths.append(len(line))
@@ -233,7 +233,7 @@ ctx = cairo.Context(surface) ## setting context
 ctx.set_source_rgb(1, 1, 1) ## white background
 ctx.paint()
 
-with open(fasta_file, "r") as fq:  ## adjust this to move to the other line and draw there
+with open(new_fasta_file, "r") as fq:  ## adjust this to move to the other line and draw there
     i = 0
     color_list = [(0.39, 0.58, 0.92), (0.85, 0.43, 0.83), (0.12, 0.69, 0.66), (0.57,0.43,0.85), (1, 0.84, 0)] ## blue, pink, green, purple, yellow
     while True:
