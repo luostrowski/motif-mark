@@ -90,7 +90,7 @@ class Gene:
             ctx.select_font_face("Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             ctx.set_font_size(15)
             ctx.move_to(self.x_start + 10, self.y - 35)
-            ctx.show_text(f"Gene: {gene_name}    Chromossome: {chr}    Location: {loc_start}-{loc_end}")
+            ctx.show_text(f"Gene: {gene_name}    Chromosome: {chr}    Location: {loc_start}-{loc_end}")
             ctx.stroke()
 
 class Exon:
@@ -272,8 +272,9 @@ for j, mname in enumerate(motif_list): ## draw legend for each motif
     ctx.show_text(mname)  ## motif name
     ctx.stroke()
     l_y_start += 30
-surface.write_to_png(str(fasta_file) + ".png") ## saving file
-
+file_name = fasta_file.split(".")[0]
+surface.write_to_png(f"{file_name}.png") ## saving file
+surface.finish()
 
 
 
